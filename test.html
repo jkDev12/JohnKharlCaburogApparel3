@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1080p Exact Width Example</title>
+    
+    <style>
+        /* Reset default browser margins */
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #222; /* Dark background so you can see the 1080p container */
+            font-family: Arial, sans-serif;
+            
+            /* Centers the container on screens larger than 1080p */
+            display: flex;
+            justify-content: center; 
+        }
+
+        /* The exact 1080p container */
+        .full-hd-container {
+            width: 1920px;  /* Exact 1080p width */
+            height: 1080px; /* Exact 1080p height */
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            
+            /* Inner spacing and box model */
+            padding: 60px;
+            box-sizing: border-box; 
+            
+            /* Prevents content from stretching the box past 1080p */
+            overflow: hidden; 
+        }
+
+        /* Basic styling for the text */
+        h1 {
+            color: #2c3e50;
+            font-size: 48px;
+        }
+        
+        p {
+            color: #555;
+            font-size: 24px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Everything inside this div is constrained to exactly 1920x1080 pixels -->
+    <div class="full-hd-container">
+        <h1>Welcome to a 1080p Screen Layout</h1>
+        <p>This container is strictly locked to exactly <strong>1920 pixels wide</strong> and <strong>1080 pixels high</strong>.</p>
+        <p>If you view this on a monitor smaller than 1080p (like a 13-inch laptop), you will have to scroll horizontally and vertically to see everything. If you view this on a 4K monitor, you will see the dark gray background framing this white box.</p>
+    </div>
+
+</body>
+</html>
