@@ -19,10 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_verify($_POST['csrf_token'] ?? null)) {
         $errorMsg = 'Your session expired. Please try again.';
     } elseif (isset($_POST['mark_paid'])) {
-        // Cash-on-delivery orders start "pending" until the admin
-        // collects payment at the door — this flips that one order to
-        // "paid". Credit-card orders are already paid at checkout, so
-        // this only ever touches payment_method = 'cod' rows.
+
         $orderId = (int) $_POST['mark_paid'];
         $mark = $pdo->prepare(
             "UPDATE orders SET payment_status = 'paid' WHERE id = ? AND payment_method = 'cod'"
@@ -59,7 +56,7 @@ $stockStmt = $pdo->prepare(
 
 foreach ($products as &$product) {
     $stockStmt->execute([$product['id']]);
-    $product['stock'] = $stockStmt->fetchAll(PDO::FETCH_KEY_PAIR); // size => quantity
+    $product['stock'] = $stockStmt->fetchAll(PDO::FETCH_KEY_PAIR); 
 }
 unset($product);
 

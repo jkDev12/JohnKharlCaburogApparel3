@@ -1,16 +1,3 @@
--- database/migration_payment_shipping.sql
--- -----------------------------------------
--- Run this ONCE against your EXISTING apparel_db database to add
--- payment method, shipping details, and receipt email to orders,
--- without touching any data you already have (unlike schema.sql,
--- this does NOT drop or recreate anything).
---
---   mysql -u root -p apparel_db < database/migration_payment_shipping.sql
---
--- If you are setting the database up for the first time instead,
--- you don't need this file — database/schema.sql already includes
--- these columns.
-
 USE apparel_db;
 
 ALTER TABLE orders
@@ -25,10 +12,6 @@ ALTER TABLE orders
     ADD COLUMN shipping_postal_code VARCHAR(20)  NOT NULL DEFAULT '' AFTER shipping_city,
     ADD COLUMN receipt_email        VARCHAR(191) NOT NULL DEFAULT '' AFTER shipping_postal_code;
 
--- Orders placed before this migration have no shipping/receipt data
--- on file (there was nowhere to enter it yet) — this just labels them
--- so they're easy to spot in the admin table rather than showing
--- misleadingly blank cells.
 UPDATE orders
 SET shipping_name = '(placed before shipping details existed)'
 WHERE shipping_name = '';

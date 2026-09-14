@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Accept either a JSON body (used by main.js) or a normal form post.
 $input = json_decode((string) file_get_contents('php://input'), true);
 if (!is_array($input)) {
     $input = $_POST;
@@ -39,9 +38,6 @@ if ($productId <= 0 || !in_array($size, $validSizes, true)) {
     exit;
 }
 
-// Always re-derive the account's own email from the session's user_id
-// server-side — never trust a client-supplied value for it, even when
-// "send to my account email" is what was selected.
 $accountEmailStmt = $pdo->prepare('SELECT email FROM user WHERE id = ?');
 $accountEmailStmt->execute([$_SESSION['user_id']]);
 $accountEmail = (string) $accountEmailStmt->fetchColumn();
@@ -59,9 +55,6 @@ $ship = $checkout['data'];
 try {
     $pdo->beginTransaction();
 
-    // Conditional UPDATE: only succeeds if stock is still available. This
-    // is atomic even under concurrent requests, so two shoppers can never
-    // both "win" the last item.
     $decrement = $pdo->prepare(
         'UPDATE product_stock SET quantity = quantity - 1 WHERE product_id = ? AND size = ? AND quantity >= 1'
     );
@@ -74,9 +67,6 @@ try {
         exit;
     }
 
-    // Cash on delivery starts "pending" (collected at the door). A card
-    // order is marked "paid" immediately since this demo has no real
-    // payment gateway to wait on — there's nothing left to collect.
     $paymentStatus = $ship['payment_method'] === 'credit_card' ? 'paid' : 'pending';
 
     $insert = $pdo->prepare(
