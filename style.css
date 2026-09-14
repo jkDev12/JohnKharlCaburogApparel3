@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-/*General*/
-
-body {
-    margin: 0;
-=======
 html {
     scroll-behavior: smooth;
 }
@@ -19,7 +13,6 @@ body {
        browser's default white — this makes that leftover space black
        instead, matching the rest of the page. */
     background-color: #000;
->>>>>>> cf7285c (Add new folder project)
 }
 
 .page-wrapper {
@@ -28,11 +21,6 @@ body {
 }
 
 
-<<<<<<< HEAD
-/*Header*/
-
-=======
->>>>>>> cf7285c (Add new folder project)
 .header {
 
     background-color: black;
@@ -77,10 +65,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: row;
-<<<<<<< HEAD
-=======
     flex-wrap: wrap; /* keeps the extra admin/log-out controls from overflowing the fixed-width header */
->>>>>>> cf7285c (Add new folder project)
 }
 
 .menu-button {
@@ -116,11 +101,6 @@ body {
 }
 
 
-<<<<<<< HEAD
-/*BG1*/
-
-=======
->>>>>>> cf7285c (Add new folder project)
 .bg1 {
     width: 1590px;
     height: 2600px;
@@ -258,11 +238,6 @@ body {
 }
 
 
-<<<<<<< HEAD
-/*Gallery*/
-
-=======
->>>>>>> cf7285c (Add new folder project)
 .gallery-section {
     width: 1590px;
     height: 1000px;
@@ -272,11 +247,6 @@ body {
 }
 
 
-<<<<<<< HEAD
-/*BG2*/
-
-=======
->>>>>>> cf7285c (Add new folder project)
 .bg2-space {
     width: 1590px;
     height: 2600px;
@@ -381,16 +351,9 @@ body {
 
 .bg3-space {
     width: 1590px;
-<<<<<<< HEAD
-    height: 2600px;
-    display: block;
-    position: relative;
-
-=======
     height: 1050px;   /* was 2600px */
     display: block;
     position: relative;
->>>>>>> cf7285c (Add new folder project)
 }
 
 .bg3 {
@@ -476,23 +439,9 @@ body {
 
 .bg4-space {
     width: 1590px;
-<<<<<<< HEAD
-    height: 2600px;
-    display: block;
-    position: relative;
-
-}
-
-.bg4 {
-    top: -1030px;
-    width: 1590px;
-    height: 1000px;
-    position: relative;
-=======
     height: 1300px;   /* was 2600px */
     display: block;
     position: relative;
->>>>>>> cf7285c (Add new folder project)
 }
 
 .feedback-header {
@@ -578,31 +527,18 @@ body {
     left: 0%;
 }
 
-<<<<<<< HEAD
-.bg5-space {
-    width: 1590px;
-    height: 2600px;
-    display: block;
-    position: relative;
-
-=======
 
 .bg5-space {
     width: 1590px;
     height: 1000px;    /* was 2600px */
     display: block;
     position: relative;
->>>>>>> cf7285c (Add new folder project)
 }
 
 .bg5 {
     top: -1330px;
     width: 1590px;
-<<<<<<< HEAD
-    height: 1000px;
-=======
     height: 450px;
->>>>>>> cf7285c (Add new folder project)
     position: relative;
 }
 
@@ -641,9 +577,6 @@ body {
     left: 33%;
     border-radius: 20px;
     width: 140px;
-<<<<<<< HEAD
-}
-=======
 }
 
 
@@ -728,8 +661,10 @@ body {
 .modal-box {
     background-color: rgb(20, 20, 20);
     border: 1px solid goldenrod;
-    width: 420px;
+    width: 460px;
     max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
     padding: 35px;
     box-sizing: border-box;
     font-family: "Playfair Display";
@@ -791,6 +726,84 @@ body {
 
 .modal-message.success {
     color: rgb(140, 210, 140);
+}
+
+/* Shipping / payment / receipt — added sections inside the buy modal */
+
+.modal-section {
+    margin-bottom: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgb(50, 50, 50);
+}
+
+.modal-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: rgb(30, 30, 30);
+    border: 1px solid rgb(90, 90, 90);
+    color: white;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    font-family: "Playfair Display";
+    font-size: 15px;
+    transition: border-color 0.15s ease;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: goldenrod;
+}
+
+.modal-input[hidden] {
+    display: none;
+}
+
+.modal-field-split {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-field-split .modal-input {
+    flex: 1;
+}
+
+.payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: rgb(220, 220, 220);
+    cursor: pointer;
+}
+
+.payment-option input[type="radio"] {
+    accent-color: goldenrod;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.card-fields {
+    margin-top: 8px;
+}
+
+.card-fields[hidden] {
+    display: none;
+}
+
+.modal-hint {
+    margin: 0;
+    font-size: 12px;
+    color: rgb(150, 150, 150);
+    font-family: Arial, sans-serif;
 }
 
 .modal-actions {
@@ -1034,6 +1047,14 @@ body {
     margin-top: 15px;
 }
 
+.table-scroll {
+    overflow-x: auto;
+}
+
+.table-scroll .admin-table {
+    min-width: 950px;
+}
+
 .admin-table th,
 .admin-table td {
     border: 1px solid rgb(60, 60, 60);
@@ -1119,4 +1140,50 @@ body {
     margin-top: 15px;
     font-size: 14px;
 }
->>>>>>> cf7285c (Add new folder project)
+
+.payment-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.payment-badge.paid {
+    background-color: rgba(60, 160, 90, 0.15);
+    border: 1px solid rgb(60, 160, 90);
+    color: rgb(160, 230, 180);
+}
+
+.payment-badge.pending {
+    background-color: rgba(230, 150, 90, 0.15);
+    border: 1px solid rgb(230, 150, 90);
+    color: rgb(240, 190, 140);
+}
+
+.shipping-cell {
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgb(210, 210, 210);
+    min-width: 180px;
+}
+
+.mark-paid-form {
+    margin: 0;
+}
+
+.mark-paid-btn {
+    background-color: transparent;
+    color: goldenrod;
+    border: 1px solid goldenrod;
+    padding: 5px 10px;
+    font-family: "Playfair Display";
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease;
+}
+
+.mark-paid-btn:hover {
+    background-color: rgba(218, 165, 32, 0.15);
+}

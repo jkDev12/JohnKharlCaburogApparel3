@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/features/validation.php';
 
 header('Content-Type: application/json');
 
@@ -38,6 +39,23 @@ if ($productId <= 0 || !in_array($size, $validSizes, true)) {
     exit;
 }
 
+// Always re-derive the account's own email from the session's user_id
+// server-side — never trust a client-supplied value for it, even when
+// "send to my account email" is what was selected.
+$accountEmailStmt = $pdo->prepare('SELECT email FROM user WHERE id = ?');
+$accountEmailStmt->execute([$_SESSION['user_id']]);
+$accountEmail = (string) $accountEmailStmt->fetchColumn();
+
+$checkout = validateCheckoutInput($input, $accountEmail);
+
+if (!empty($checkout['errors'])) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => implode(' ', $checkout['errors'])]);
+    exit;
+}
+
+$ship = $checkout['data'];
+
 try {
     $pdo->beginTransaction();
 
@@ -56,8 +74,39 @@ try {
         exit;
     }
 
-    $pdo->prepare('INSERT INTO orders (user_id, product_id, size, quantity) VALUES (?, ?, ?, 1)')
-        ->execute([$_SESSION['user_id'], $productId, $size]);
+    // Cash on delivery starts "pending" (collected at the door). A card
+    // order is marked "paid" immediately since this demo has no real
+    // payment gateway to wait on — there's nothing left to collect.
+    $paymentStatus = $ship['payment_method'] === 'credit_card' ? 'paid' : 'pending';
+
+    $insert = $pdo->prepare(
+        'INSERT INTO orders (
+            user_id, product_id, size, quantity,
+            payment_method, payment_status, card_name, card_last4,
+            shipping_name, shipping_phone, shipping_address, shipping_city, shipping_postal_code,
+            receipt_email
+        ) VALUES (
+            :user_id, :product_id, :size, 1,
+            :payment_method, :payment_status, :card_name, :card_last4,
+            :shipping_name, :shipping_phone, :shipping_address, :shipping_city, :shipping_postal_code,
+            :receipt_email
+        )'
+    );
+    $insert->execute([
+        ':user_id'              => $_SESSION['user_id'],
+        ':product_id'           => $productId,
+        ':size'                 => $size,
+        ':payment_method'       => $ship['payment_method'],
+        ':payment_status'       => $paymentStatus,
+        ':card_name'            => $ship['card_name'],
+        ':card_last4'           => $ship['card_last4'],
+        ':shipping_name'        => $ship['shipping_name'],
+        ':shipping_phone'       => $ship['shipping_phone'],
+        ':shipping_address'     => $ship['shipping_address'],
+        ':shipping_city'        => $ship['shipping_city'],
+        ':shipping_postal_code' => $ship['shipping_postal_code'],
+        ':receipt_email'        => $ship['receipt_email'],
+    ]);
 
     $remainingStmt = $pdo->prepare('SELECT quantity FROM product_stock WHERE product_id = ? AND size = ?');
     $remainingStmt->execute([$productId, $size]);
@@ -65,9 +114,13 @@ try {
 
     $pdo->commit();
 
+    $confirmation = $ship['payment_method'] === 'credit_card'
+        ? 'Payment received! A receipt is on its way to ' . $ship['receipt_email'] . '.'
+        : 'Order placed! Pay in cash when it arrives. A receipt is on its way to ' . $ship['receipt_email'] . '.';
+
     echo json_encode([
         'success'   => true,
-        'message'   => 'Order placed! Thanks for shopping with us.',
+        'message'   => $confirmation,
         'remaining' => $remaining,
     ]);
 } catch (Throwable $e) {
@@ -78,3 +131,4 @@ try {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Something went wrong. Please try again.']);
 }
+

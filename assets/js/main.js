@@ -16,8 +16,91 @@
     var cancelBtn = document.getElementById('cancelBtn');
     var checkoutBtn = document.getElementById('checkoutBtn');
 
+    var shipName = document.getElementById('shipName');
+    var shipPhone = document.getElementById('shipPhone');
+    var shipAddress = document.getElementById('shipAddress');
+    var shipCity = document.getElementById('shipCity');
+    var shipPostal = document.getElementById('shipPostal');
+
+    var cardFields = document.getElementById('cardFields');
+    var cardName = document.getElementById('cardName');
+    var cardNumber = document.getElementById('cardNumber');
+    var cardExpiry = document.getElementById('cardExpiry');
+
+    var otherEmail = document.getElementById('otherEmail');
+
     var activeProductId = null;
     var selectedSize = null;
+
+    function currentPaymentMethod() {
+        var checked = document.querySelector('input[name="paymentMethod"]:checked');
+        return checked ? checked.value : 'cod';
+    }
+
+    function currentReceiptTarget() {
+        var checked = document.querySelector('input[name="receiptTarget"]:checked');
+        return checked ? checked.value : 'account';
+    }
+
+    function isValidEmail(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    function updateCheckoutAvailability() {
+        var filled = function (el) { return el && el.value.trim() !== ''; };
+
+        var ok = !!selectedSize
+            && filled(shipName) && filled(shipPhone) && filled(shipAddress)
+            && filled(shipCity) && filled(shipPostal);
+
+        if (currentPaymentMethod() === 'credit_card') {
+            var digits = cardNumber ? cardNumber.value.replace(/\D/g, '') : '';
+            ok = ok
+                && filled(cardName)
+                && digits.length >= 13 && digits.length <= 19
+                && /^\d{2}\/\d{2}$/.test(cardExpiry ? cardExpiry.value.trim() : '');
+        }
+
+        if (currentReceiptTarget() === 'other') {
+            ok = ok && isValidEmail(otherEmail ? otherEmail.value.trim() : '');
+        }
+
+        checkoutBtn.disabled = !ok;
+    }
+
+    function resetModalFields() {
+        [shipName, shipPhone, shipAddress, shipCity, shipPostal,
+            cardName, cardNumber, cardExpiry, otherEmail].forEach(function (el) {
+            if (el) { el.value = ''; }
+        });
+
+        var codRadio = document.querySelector('input[name="paymentMethod"][value="cod"]');
+        if (codRadio) { codRadio.checked = true; }
+        if (cardFields) { cardFields.hidden = true; }
+
+        var accountRadio = document.querySelector('input[name="receiptTarget"][value="account"]');
+        if (accountRadio) { accountRadio.checked = true; }
+        if (otherEmail) { otherEmail.hidden = true; }
+    }
+
+    document.querySelectorAll('input[name="paymentMethod"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            if (cardFields) { cardFields.hidden = currentPaymentMethod() !== 'credit_card'; }
+            updateCheckoutAvailability();
+        });
+    });
+
+    document.querySelectorAll('input[name="receiptTarget"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            if (otherEmail) { otherEmail.hidden = currentReceiptTarget() !== 'other'; }
+            updateCheckoutAvailability();
+        });
+    });
+
+    [shipName, shipPhone, shipAddress, shipCity, shipPostal,
+        cardName, cardNumber, cardExpiry, otherEmail].forEach(function (el) {
+        if (el) { el.addEventListener('input', updateCheckoutAvailability); }
+    });
 
     function openModal(productId) {
         var product = productMap[productId];
@@ -31,6 +114,7 @@
         modalName.textContent = product.name;
         modalMessage.textContent = '';
         modalMessage.classList.remove('success');
+        resetModalFields();
         checkoutBtn.disabled = true;
         checkoutBtn.textContent = 'Checkout';
         sizeGrid.innerHTML = '';
@@ -65,8 +149,8 @@
             options[i].classList.remove('selected');
         }
         button.classList.add('selected');
-        checkoutBtn.disabled = false;
         modalMessage.textContent = '';
+        updateCheckoutAvailability();
     }
 
     function closeModal() {
@@ -113,13 +197,30 @@
             modalMessage.textContent = '';
             modalMessage.classList.remove('success');
 
+            var paymentMethod = currentPaymentMethod();
+            var receiptTarget = currentReceiptTarget();
+
             fetch('../checkout.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     product_id: activeProductId,
                     size: selectedSize,
-                    csrf_token: csrfToken
+                    csrf_token: csrfToken,
+
+                    shipping_name: shipName.value.trim(),
+                    shipping_phone: shipPhone.value.trim(),
+                    shipping_address: shipAddress.value.trim(),
+                    shipping_city: shipCity.value.trim(),
+                    shipping_postal_code: shipPostal.value.trim(),
+
+                    payment_method: paymentMethod,
+                    card_name: paymentMethod === 'credit_card' ? cardName.value.trim() : '',
+                    card_number: paymentMethod === 'credit_card' ? cardNumber.value.trim() : '',
+                    card_expiry: paymentMethod === 'credit_card' ? cardExpiry.value.trim() : '',
+
+                    receipt_target: receiptTarget,
+                    receipt_email: receiptTarget === 'other' ? otherEmail.value.trim() : ''
                 })
             })
                 .then(function (response) {
@@ -139,7 +240,7 @@
                             }
                         }
 
-                        setTimeout(closeModal, 1200);
+                        setTimeout(closeModal, 1600);
                     } else {
                         modalMessage.textContent = data.message || 'Something went wrong.';
                         modalMessage.classList.remove('success');
@@ -149,7 +250,7 @@
                     modalMessage.textContent = 'Network error. Please try again.';
                 })
                 .finally(function () {
-                    checkoutBtn.disabled = false;
+                    updateCheckoutAvailability();
                     checkoutBtn.textContent = 'Checkout';
                 });
         });

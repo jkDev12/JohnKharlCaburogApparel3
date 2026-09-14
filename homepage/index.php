@@ -2,7 +2,6 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../config.php';
 
-// The whole storefront sits behind login.
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../login.php');
     exit;
@@ -11,6 +10,10 @@ if (!isset($_SESSION['user_id'])) {
 $status  = $_GET['status'] ?? null;
 $message = $_GET['message'] ?? null;
 
+$accountEmailStmt = $pdo->prepare('SELECT email FROM user WHERE id = ?');
+$accountEmailStmt->execute([$_SESSION['user_id']]);
+$accountEmail = (string) $accountEmailStmt->fetchColumn();
+
 $products = $pdo->query('SELECT id, name, image, price FROM products ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);
 
 $sizeOrder = ['XS', 'S', 'M', 'L', 'XL'];
@@ -18,7 +21,7 @@ $stockStmt = $pdo->prepare('SELECT size, quantity FROM product_stock WHERE produ
 
 foreach ($products as &$product) {
     $stockStmt->execute([$product['id']]);
-    $rows = $stockStmt->fetchAll(PDO::FETCH_KEY_PAIR); // size => quantity
+    $rows = $stockStmt->fetchAll(PDO::FETCH_KEY_PAIR); 
 
     $product['sizes'] = [];
     foreach ($sizeOrder as $size) {
@@ -194,13 +197,13 @@ unset($product);
         </div>
 
         <div id="contact" class="bg5-space">
-            <img class="bg5" src="../images/images.png">
-            <div>
+            <img class="bg5" src="../images/footer2.png">
+            <!--<div>
                 <img class="footer-logo" src="../images/logo.png">
                 <p class="footer-brand">John Kharl Caburog Apparel</p>
                 <img class="app-store" src="../images/playstore@3x.png">
                 <img class="play-store" src="../images/appstore@3x.png">
-            </div>
+            </div> -->
         </div>
 
     </div>
@@ -210,6 +213,54 @@ unset($product);
             <h3 id="modalProductName" class="modal-title"></h3>
             <p class="modal-subtitle">Select a size</p>
             <div id="sizeGrid" class="size-grid"></div>
+
+            <div class="modal-section">
+                <p class="modal-subtitle">Shipping details</p>
+                <input type="text" id="shipName" class="modal-input" placeholder="Full name" autocomplete="name">
+                <input type="text" id="shipPhone" class="modal-input" placeholder="Phone number" autocomplete="tel">
+                <input type="text" id="shipAddress" class="modal-input" placeholder="Street address" autocomplete="street-address">
+                <div class="modal-field-split">
+                    <input type="text" id="shipCity" class="modal-input" placeholder="City">
+                    <input type="text" id="shipPostal" class="modal-input" placeholder="Postal code">
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <p class="modal-subtitle">Payment method</p>
+                <div class="payment-options">
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="cod" checked>
+                        <span>Cash on delivery</span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="credit_card">
+                        <span>Credit card</span>
+                    </label>
+                </div>
+
+                <div id="cardFields" class="card-fields" hidden>
+                    <input type="text" id="cardName" class="modal-input" placeholder="Name on card" autocomplete="cc-name">
+                    <input type="text" id="cardNumber" class="modal-input" placeholder="Card number" inputmode="numeric" autocomplete="cc-number" maxlength="19">
+                    <input type="text" id="cardExpiry" class="modal-input" placeholder="MM/YY" autocomplete="cc-exp" maxlength="5">
+                    <p class="modal-hint">Demo checkout only — no real charge is made, and we don't ask for or store your CVV.</p>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <p class="modal-subtitle">Send receipt to</p>
+                <div class="payment-options">
+                    <label class="payment-option">
+                        <input type="radio" name="receiptTarget" value="account" checked>
+                        <span>My account email (<?= e($accountEmail) ?>)</span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="receiptTarget" value="other">
+                        <span>Another email</span>
+                    </label>
+                </div>
+                <input type="email" id="otherEmail" class="modal-input" placeholder="name@example.com" hidden>
+            </div>
+
             <p id="modalMessage" class="modal-message"></p>
             <div class="modal-actions">
                 <button type="button" id="cancelBtn" class="btn-cancel">Cancel</button>
