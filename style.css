@@ -4,14 +4,6 @@ html {
 
 body {
     margin: 0;
-    /* The bg2/bg3/bg4/bg5 "-space" wrappers below are all a fixed
-       2600px tall, but the image + absolutely-positioned content
-       inside each one is shifted upward with a large negative `top`
-       and only fills part of that height. Whatever's left over (and
-       the gaps around the product cards in .gallery-section, which
-       has no background of its own either) used to show the
-       browser's default white — this makes that leftover space black
-       instead, matching the rest of the page. */
     background-color: #000;
 }
 
@@ -65,7 +57,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap; /* keeps the extra admin/log-out controls from overflowing the fixed-width header */
+    flex-wrap: wrap; 
 }
 
 .menu-button {
@@ -251,7 +243,7 @@ body {
     width: 1590px;
     height: 2600px;
     display: block;
-    position: relative;   /* NEW — makes this the anchor for .ab-header */
+    position: relative;   
 }
 
 .bg2 {
@@ -364,7 +356,7 @@ body {
 
 .bg3-space {
     width: 1590px;
-    height: 1050px;   /* was 2600px */
+    height: 1050px;   
     display: block;
     position: relative;
 }
@@ -452,7 +444,7 @@ body {
 
 .bg4-space {
     width: 1590px;
-    height: 1300px;   /* was 2600px */
+    height: 1300px;   
     display: block;
     position: relative;
 }
@@ -543,7 +535,7 @@ body {
 
 .bg5-space {
     width: 1590px;
-    height: 1000px;    /* was 2600px */
+    height: 1000px;    
     display: block;
     position: relative;
 }
@@ -748,7 +740,6 @@ body {
     color: rgb(140, 210, 140);
 }
 
-/* Shipping / payment / receipt — added sections inside the buy modal */
 
 .modal-section {
     margin-bottom: 20px;

@@ -89,14 +89,7 @@ function validateStringOrInt(mixed $value, string $label): ?string
     return null;
 }
 
-/**
- * Validates the shipping + payment + receipt fields collected in the
- * buy modal. Card details are only required (and only validated) when
- * payment_method is "credit_card" — cash on delivery skips them
- * entirely. Only the card's name, expiry, and last 4 digits ever make
- * it into $data; the full card number and any CVV are never returned
- * or persisted.
- */
+
 function validateCheckoutInput(array $input, string $accountEmail): array
 {
     $errors = [];

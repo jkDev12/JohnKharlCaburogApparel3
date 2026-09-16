@@ -268,7 +268,6 @@
         }, 2500);
     }
 
-    // Lightly highlight the nav item for the section currently in view.
     var sectionIds = ['home', 'gallery', 'about', 'contact'];
     var sections = sectionIds
         .map(function (id) { return document.getElementById(id); })
