@@ -1,7 +1,3 @@
--- database/schema.sql
--- --------------------
--- Run this once against your MySQL server to set up the database.
--- See database/README.md for the exact command-line steps.
 
 CREATE DATABASE IF NOT EXISTS apparel_db
     CHARACTER SET utf8mb4
